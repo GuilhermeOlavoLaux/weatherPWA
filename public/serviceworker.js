@@ -18,12 +18,11 @@ this.self.addEventListener('install', (event) => {
 
 // liesten para as requests
 this.self.addEventListener('fetch', (event) => {
-    event.responseWith(
-        //procura o request no cache
+    event.respondWith(
+        //responde com todos os requests salvos no cache
         caches.match(event.request)
             .then(() => {
-                console.log(event.request)
-                //retorna os dados, caso não encontrar vai retornar a pagina de offline padrão
+                //retorna os dados, caso não tenha sucesso, vai retornar a pagina de offline padrão
                 return fetch(event.request)
                     .catch(() => caches.match('offline.html'))
             })
@@ -32,7 +31,22 @@ this.self.addEventListener('fetch', (event) => {
 });
 
 
+
+
 // ativa o sw
 this.self.addEventListener('activate', (event) => {
+    const cacheWhitelist = []
+    cacheWhitelist.push(CACHE_NAME)
+    //remove do cache tudo que não estiver no cache original (['index.html', 'offline.html'])
+    event.waitUntil(
+        caches.keys().then((cacheNames) => Promise.all(
+            cacheNames.map((cacheName) => {
+                if (!cacheWhitelist.includes(cacheName)) {
+                    return caches.delete(cacheName)
+                }
+            })
+        ))
+    )
 
 });
+
