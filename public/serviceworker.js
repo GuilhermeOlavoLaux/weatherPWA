@@ -16,7 +16,7 @@ this.self.addEventListener('install', (event) => {
 });
 
 
-// liesten para as requests
+// listen para as requests
 this.self.addEventListener('fetch', (event) => {
     event.respondWith(
         //responde com todos os requests salvos no cache
